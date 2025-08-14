@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asset Management</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+<div class="main-content">
+    <!-- Səhifə başlığı və əməliyyat düymələri -->
+    <div class="page-header">
+        <div class="header-title">
+            <h1>Asset Management</h1>
+            <p id="asset-count">0 Total Assets</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-secondary" id="export-csv"><i class="fa-solid fa-download"></i> Export to CSV</button>
+            <button class="btn btn-primary" id="add-asset-btn"><i class="fa-solid fa-plus"></i> Add Asset</button>
+        </div>
+    </div>
+
+    <!-- Filtrlər və Axtarış paneli -->
+    <div class="controls-bar">
+        <div class="search-box">
+            <i class="fa-solid fa-search"></i>
+            <input type="text" id="search-input" placeholder="Search by name, tag, or assigned user...">
+        </div>
+        <div class="filter-group">
+            <select id="filter-status">
+                <option value="all">All Statuses</option>
+                <option value="In Use">In Use</option>
+                <option value="In Stock">In Stock</option>
+                <option value="In Repair">In Repair</option>
+                <option value="Archived">Archived</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <select id="filter-category">
+                <option value="all">All Categories</option>
+            </select>
+        </div>
+    </div>
+    
+    <!-- Aktivlər cədvəli -->
+    <div class="asset-table-container">
+        <table class="asset-table">
+            <thead>
+                <tr>
+                    <th data-sort="name">Asset Name & Tag <i class="fa-solid fa-sort"></i></th>
+                    <th data-sort="category">Category <i class="fa-solid fa-sort"></i></th>
+                    <th data-sort="status">Status <i class="fa-solid fa-sort"></i></th>
+                    <th data-sort="assignedTo">Assigned To <i class="fa-solid fa-sort"></i></th>
+                    <th data-sort="purchaseDate">Purchase Date <i class="fa-solid fa-sort"></i></th>
+                    <th data-sort="price">Price <i class="fa-solid fa-sort"></i></th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="asset-table-body">
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- MODAL: YENİ AKTİV ƏLAVƏ ET -->
+<div id="addAssetModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Add New Asset</h2>
+            <span class="close-btn">&times;</span>
+        </div>
+        <form id="addAssetForm">
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-group"><label for="assetName">Asset Name</label><input type="text" id="assetName" required></div>
+                    <div class="form-group"><label for="assetCategory">Category</label><input type="text" id="assetCategory" required></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label for="purchasePrice">Purchase Price (AZN)</label><input type="number" id="purchasePrice" step="0.01" required></div>
+                    <div class="form-group"><label for="purchaseDate">Purchase Date</label><input type="date" id="purchaseDate" required></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label for="usefulLife">Useful Life (Years)</label><input type="number" id="usefulLife" required></div>
+                    <div class="form-group"><label for="serialNumber">Serial Number</label><input type="text" id="serialNumber"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary cancel-btn">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save Asset</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL: CHECK-OUT (TƏHVİL VERMƏ) -->
+<div id="checkoutModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="checkout-modal-title">Check-out Asset</h2>
+            <span class="close-btn">&times;</span>
+        </div>
+        <form id="checkoutForm">
+            <div class="modal-body">
+                <p>You are about to assign <strong id="checkout-asset-name"></strong>.</p>
+                <div class="form-group">
+                    <label for="assignToEmployee">Assign to Employee</label>
+                    <select id="assignToEmployee" required></select>
+                </div>
+                <div class="form-group">
+                    <label for="checkoutDate">Check-out Date</label>
+                    <input type="date" id="checkoutDate" required>
+                </div>
+                 <div class="form-group">
+                    <label for="checkoutNotes">Notes (Optional)</label>
+                    <textarea id="checkoutNotes" rows="3"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary cancel-btn">Cancel</button>
+                <button type="submit" class="btn btn-primary">Confirm Check-out</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL: CHECK-IN (GERİ QAYTARMA) -->
+<div id="checkinModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="checkin-modal-title">Check-in Asset</h2>
+            <span class="close-btn">&times;</span>
+        </div>
+        <form id="checkinForm">
+            <div class="modal-body">
+                <p>Returning <strong id="checkin-asset-name"></strong> to stock.</p>
+                <div class="form-group">
+                    <label for="checkinDate">Return Date</label>
+                    <input type="date" id="checkinDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="checkinCondition">Asset Condition</label>
+                    <select id="checkinCondition" required>
+                        <option value="Good">Good</option>
+                        <option value="Fair">Fair (minor wear)</option>
+                        <option value="Damaged">Damaged</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="checkinNotes">Notes (e.g., mention any damages or missing parts)</label>
+                    <textarea id="checkinNotes" rows="3"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary cancel-btn">Cancel</button>
+                <button type="submit" class="btn btn-primary">Confirm Check-in</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL: DETALLARA BAXIŞ -->
+<div id="detailsModal" class="modal">
+    <div class="modal-content modal-lg">
+        <div class="modal-header">
+            <h2 id="details-modal-title">Asset Details</h2>
+            <span class="close-btn">&times;</span>
+        </div>
+        <div class="modal-body" id="details-modal-body"></div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary cancel-btn">Close</button>
+        </div>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
