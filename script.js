@@ -1,12 +1,12 @@
 document.addEventListener('DOMContentLoaded', function () {
     // --- DATA STORE (DATABASE SIMULATION) ---
     const employees = [
-        { id: 'E001', name: 'Mail Isayev', department: 'Finance' },
-        { id: 'E002', name: 'Seymur Jalalov', department: 'Administration' },
-        { id: 'E003', name: 'Khatia Tkeshelashvili', department: 'HR' },
-        { id: 'E004', name: 'Nino Tinikashvili', department: 'Operations' },
-        { id: 'E005', name: 'Akaki Koberidze', department: 'IT' },
-        { id: 'E006', name: 'Marine Jandagashvili', department: 'Finance' },
+        { id: 'E001', name: 'Afrasiyab Huseynli', department: 'Finance' },
+        { id: 'E002', name: 'Malik Aliyev', department: 'Administration' },
+        { id: 'E003', name: 'John Doe', department: 'HR' },
+        { id: 'E004', name: 'Ali Nino', department: 'Operations' },
+        { id: 'E005', name: 'Flora Hasanova', department: 'IT' },
+        { id: 'E006', name: 'Daniz Mammadli', department: 'Finance' },
     ];
 
     let assets = [
